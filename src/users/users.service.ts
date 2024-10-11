@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hashService } from 'src/utils/bcrypt';
@@ -11,8 +15,8 @@ import { JwtService } from '@nestjs/jwt';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    private jwtService: JwtService
-) {}
+    private jwtService: JwtService,
+  ) {}
 
   public async findAll(): Promise<UserDocument[]> {
     const result = await this.userModel.find();
@@ -20,12 +24,19 @@ export class UsersService {
     return result;
   }
 
+  public async findById(id: string){
+    const result = await this.userModel.findById(id);
+
+    return result;
+  }
+
   public async create(user: CreateUserDto) {
+    const findUser = await this.userModel.findOne({ email: user.email });
 
-    const findUser = await this.userModel.findOne({email: user.email});
-
-    if(findUser){
-        throw new BadRequestException(`Usuário com email ${user.email} já cadastrado`);
+    if (findUser) {
+      throw new BadRequestException(
+        `Usuário com email ${user.email} já cadastrado`,
+      );
     }
 
     const hash = await hashService.hash(user.password);
@@ -39,24 +50,24 @@ export class UsersService {
     return newUser._id;
   }
 
-  public async auth(data: LoginDto){
-    const findUser = await this.userModel.findOne({email: data.email});
+  public async auth(data: LoginDto) {
+    const findUser = await this.userModel.findOne({ email: data.email });
 
-    if(!findUser){
-        throw new UnauthorizedException('Email ou senha incorretos');
+    if (!findUser) {
+      throw new UnauthorizedException('Email ou senha incorretos');
     }
 
     const isMatch = await hashService.compare(data.password, findUser.password);
 
-    if(!isMatch){
-        throw new UnauthorizedException('Email ou senha incorretos');
+    if (!isMatch) {
+      throw new UnauthorizedException('Email ou senha incorretos');
     }
 
-    const token = await this.jwtService.signAsync({id: findUser.id});
+    const token = await this.jwtService.signAsync({ id: findUser.id });
 
     return {
-        token,
-        id: findUser.id
+      token,
+      id: findUser.id,
     };
   }
 }
