@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schema/user.schema';
+import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hashService } from 'src/utils/bcrypt';
@@ -17,12 +17,6 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
-
-  public async findAll(): Promise<UserDocument[]> {
-    const result = await this.userModel.find();
-
-    return result;
-  }
 
   public async findById(id: string){
     const result = await this.userModel.findById(id);

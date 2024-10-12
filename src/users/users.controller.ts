@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { LoginDto } from './dto/login.dto';
@@ -7,13 +7,6 @@ import { LoginDto } from './dto/login.dto';
 export class UsersController {
 
     constructor(private service: UsersService){}
-
-    @Get()
-    public async findAll(){
-        const result = await this.service.findAll();
-
-        return result;
-    }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
