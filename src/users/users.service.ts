@@ -41,7 +41,12 @@ export class UsersService {
     });
     await newUser.save();
 
-    return newUser._id;
+    const token = await this.jwtService.signAsync({ id: newUser._id });
+
+    return {
+      token,
+      userId: newUser._id 
+    };
   }
 
   public async auth(data: LoginDto) {
@@ -61,7 +66,7 @@ export class UsersService {
 
     return {
       token,
-      id: findUser.id,
+      userId: findUser.id,
     };
   }
 }
