@@ -1,4 +1,4 @@
-import { IsDate, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateEntrieDto {
 
@@ -16,6 +16,6 @@ export class UpdateEntrieDto {
   price: number | null;
 
   @IsOptional()  
-  @IsDate()
+  @IsDateString()
   date: Date | null;
 }

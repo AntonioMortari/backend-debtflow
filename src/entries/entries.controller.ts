@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { EntriesService } from './entries.service';
 import { CreateEntrieDto } from './dto/create-entrie.dto';
 import { UpdateEntrieDto } from './dto/update-entrie.dto';
@@ -12,8 +12,8 @@ export class EntriesController {
 
     @UseGuards(AuthGuard)
     @Get('/user/:userId')
-    public async findByUserId(@Param('userId') userId: string){
-        const result = await this.entrieService.findByUserId(userId);
+    public async findByUserId(@Param('userId') userId: string, @Query('status') status?: 'paid' | 'toPay'){
+        const result = await this.entrieService.findByUserId(userId, status);
 
         return result;
     }
@@ -24,7 +24,9 @@ export class EntriesController {
     public async create(@Body(new ValidationPipe()) entrie: CreateEntrieDto){
         const result = await this.entrieService.create(entrie);
 
-        return result;
+        return {
+            id: result
+        };
     }
 
     @UseGuards(AuthGuard)

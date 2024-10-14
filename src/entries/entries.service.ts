@@ -13,14 +13,22 @@ export class EntriesService {
     private userService: UsersService,
   ) {}
 
-  public async findByUserId(userId: string): Promise<EntrieDocument[]>{
+  public async findByUserId(userId: string, status?: 'paid' | 'toPay'): Promise<EntrieDocument[]>{
     const findUser = await this.userService.findById(userId);
 
     if(!findUser){
         throw new NotFoundException('Usuário não encontrado')
     }
 
-    const result = await this.entrieModel.find({userId});
+    const filters: Record<string, string> = {
+      userId
+    }
+
+    if(status){
+      filters.status = status
+    }
+
+    const result = await this.entrieModel.find(filters);
 
     return result;
   }
